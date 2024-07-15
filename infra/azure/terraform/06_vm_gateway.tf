@@ -257,29 +257,29 @@ processors:
     spike_limit_percentage: 25
 
   resourcedetection:
-      detectors: [env, azure]
-      azure:
-        resource_attributes:
-          cloud.provider:
-            enabled: true
-          cloud.platform:
-            enabled: false
-          cloud.region:
-            enabled: true
-          cloud.account.id:
-            enabled: false
-          host.id:
-            enabled: false
-          host.name:
-            enabled: false
-          azure.vm.name:
-            enabled: false
-          azure.vm.size:
-            enabled: true
-          azure.vm.scaleset.name:
-            enabled: false
-          azure.resourcegroup.name:
-            enabled: false
+    detectors: [env, azure]
+    azure:
+      resource_attributes:
+        cloud.provider:
+          enabled: true
+        cloud.platform:
+          enabled: false
+        cloud.region:
+          enabled: true
+        cloud.account.id:
+          enabled: false
+        host.id:
+          enabled: false
+        host.name:
+          enabled: false
+        azure.vm.name:
+          enabled: false
+        azure.vm.size:
+          enabled: true
+        azure.vm.scaleset.name:
+          enabled: false
+        azure.resourcegroup.name:
+          enabled: false
 
   resource:
     attributes:
