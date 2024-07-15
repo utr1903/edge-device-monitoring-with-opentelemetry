@@ -152,15 +152,6 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:4317
 
-  filelog:
-    include:
-      - /var/log/myservice/*.json
-    operators:
-      - type: json_parser
-        timestamp:
-          parse_from: attributes.time
-          layout: "%Y-%m-%d %H:%M:%S"
-
   hostmetrics:
     collection_interval: 30s
     # root_path: /hostfs
@@ -314,10 +305,15 @@ service:
       processors: [memory_limiter, batch]
       exporters: [otlp]
 
-      # logs/general:
-      #   receivers: [filelog]
-      #   processors: [memory_limiter, resourcedetection, resource, batch]
-      #   exporters: [otlp]
+    traces/otlp:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp]
+
+    logs/otlp:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp]
 
   telemetry:
     # logs:

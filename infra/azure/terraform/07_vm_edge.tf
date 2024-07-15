@@ -153,14 +153,12 @@ receivers:
               replacement: $$1
               action: keep
 
-  filelog:
-    include:
-      - /var/log/myservice/*.json
-    operators:
-      - type: json_parser
-        timestamp:
-          parse_from: attributes.time
-          layout: "%Y-%m-%d %H:%M:%S"
+  otlp:
+    protocols:
+      grpc:
+        endpoint: localhost:4317
+      http:
+        endpoint: localhost:4318
 
   hostmetrics:
     collection_interval: 30s
@@ -310,11 +308,20 @@ service:
       receivers: [hostmetrics]
       processors: [memory_limiter, resourcedetection, resource, batch]
       exporters: [otlp]
+    metrics/otlp:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, resource, batch]
+      exporters: [otlp]
 
-      # logs/general:
-      #   receivers: [filelog]
-      #   processors: [memory_limiter, resourcedetection, resource, batch]
-      #   exporters: [otlp]
+    traces/otlp:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, resource, batch]
+      exporters: [otlp]
+
+    logs/otlp:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, resource, batch]
+      exporters: [otlp]
 
   telemetry:
     # logs:
