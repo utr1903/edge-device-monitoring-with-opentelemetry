@@ -85,7 +85,7 @@ resource "azurerm_linux_virtual_machine" "gateway_vm" {
   }
 
   user_data = base64encode(<<SCRIPT
-    #!/bin/bash
+#!/bin/bash
 
 #############################
 ### TESTING PURPOSES ONLY ###
@@ -144,7 +144,7 @@ receivers:
             - source_labels: [__name__]
               separator: ;
               regex: otelcol_exporter_queue_size|otelcol_exporter_queue_capacity|otelcol_processor_dropped_metric_points|otelcol_processor_dropped_log_records|otelcol_exporter_enqueue_failed_metric_points|otelcol_exporter_enqueue_failed_log_records|otelcol_receiver_refused_metric_points|otelcol_receiver_refused_log_records|otelcol_exporter_refused_metric_points|otelcol_exporter_refused_log_records
-              replacement: $1
+              replacement: $$1
               action: keep
 
   otlp:
