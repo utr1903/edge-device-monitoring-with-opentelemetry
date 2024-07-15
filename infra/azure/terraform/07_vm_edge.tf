@@ -153,14 +153,12 @@ receivers:
               replacement: $$1
               action: keep
 
-  filelog:
-    include:
-      - /var/log/myservice/*.json
-    operators:
-      - type: json_parser
-        timestamp:
-          parse_from: attributes.time
-          layout: "%Y-%m-%d %H:%M:%S"
+  otlp:
+    protocols:
+      grpc:
+        endpoint: localhost:4317
+      http:
+        endpoint: localhost:4318
 
   hostmetrics:
     collection_interval: 30s
@@ -310,11 +308,20 @@ service:
       receivers: [hostmetrics]
       processors: [memory_limiter, resourcedetection, resource, batch]
       exporters: [otlp]
+    metrics/otlp:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, resource, batch]
+      exporters: [otlp]
 
-      # logs/general:
-      #   receivers: [filelog]
-      #   processors: [memory_limiter, resourcedetection, resource, batch]
-      #   exporters: [otlp]
+    traces/otlp:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, resource, batch]
+      exporters: [otlp]
+
+    logs/otlp:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, resource, batch]
+      exporters: [otlp]
 
   telemetry:
     # logs:
@@ -327,8 +334,23 @@ EOF'
 sudo systemctl daemon-reload
 sudo systemctl restart otelcol-contrib
 
+#################
+### Stress NG ###
+#################
+
+echo "Y" | sudo apt-get install stress-ng
+
+##################
+### Golang SDK ###
+##################
+
+wget https://golang.org/dl/go1.21.5.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
+source ~/.profile
+
 SCRIPT
-)
+  )
 
   depends_on = [
     azurerm_linux_virtual_machine.gateway_vm
