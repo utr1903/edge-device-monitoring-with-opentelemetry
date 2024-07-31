@@ -338,7 +338,7 @@ SELECT average(`process.runtime.go.goroutines`)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device'
+  service.name = 'device'
 FACET service.instance.id
 EOF
       }
@@ -360,7 +360,7 @@ SELECT average(`process.runtime.go.gc.count`)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device'
+  service.name = 'device'
 FACET service.instance.id
 EOF
       }
@@ -387,7 +387,7 @@ SELECT
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device'
+  service.name = 'device'
 EOF
       }
     }
@@ -408,7 +408,7 @@ SELECT average(`process.runtime.go.goroutines`)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device'
+  service.name = 'device'
 FACET service.instance.id
 TIMESERIES
 EOF
@@ -431,7 +431,7 @@ SELECT average(`process.runtime.go.gc.count`)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device'
+  service.name = 'device'
 FACET service.instance.id
 TIMESERIES
 EOF
@@ -459,7 +459,7 @@ SELECT
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device'
+  service.name = 'device'
 FACET service.instance.id
 TIMESERIES
 EOF
@@ -482,7 +482,7 @@ SELECT average(duration.ms)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device' AND
+  service.name = 'device' AND
   span.kind = 'server'
 FACET service.instance.id
 EOF
@@ -505,7 +505,7 @@ SELECT average(duration.ms)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device' AND
+  service.name = 'device' AND
   span.kind = 'server'
 FACET service.instance.id
 TIMESERIES
@@ -529,7 +529,7 @@ SELECT average(duration.ms)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device' AND
+  service.name = 'device' AND
   span.kind = 'client' AND
   name = 'readSensorData'
 FACET service.instance.id
@@ -554,7 +554,7 @@ SELECT average(duration.ms)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device' AND
+  service.name = 'device' AND
   span.kind = 'internal' AND
   name = 'processSensorData'
 FACET service.instance.id
@@ -579,7 +579,7 @@ SELECT average(duration.ms)
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device' AND
+  service.name = 'device' AND
   span.kind = 'client' AND
   name = 'activateActuators'
 FACET service.instance.id
@@ -599,28 +599,21 @@ EOF
       nrql_query {
         account_id = var.NEW_RELIC_ACCOUNT_ID
         query      = <<EOF
-FROM SpanEvent
+FROM Span
 SELECT count(*)
 WHERE
-  name = 'exception' AND
-  error.message IS NOT NULL AND
-  trace.id IN (
-    FROM Span
-    SELECT uniques(trace.id)
-    WHERE
-      instrumentation.provider = 'opentelemetry' AND
-      host.name IN ({{host_names}}) AND
-      service.name = 'test-device' AND
-      otel.status_code = 'ERROR'
-    LIMIT MAX
-  )
+  instrumentation.provider = 'opentelemetry' AND
+  host.name IN ({{host_names}}) AND
+  service.name = 'device' AND
+  otel.status_code = 'ERROR'
+FACET service.instance.id
 TIMESERIES
 EOF
       }
     }
 
     # Logs of errors (-)
-    widget_log_table {
+    widget_table {
       title  = "Logs of errors (-)"
       column = 7
       row    = 13
@@ -631,18 +624,18 @@ EOF
         account_id = var.NEW_RELIC_ACCOUNT_ID
         query      = <<EOF
 FROM Log
-SELECT message
+SELECT level, message
 WHERE
   instrumentation.provider = 'opentelemetry' AND
   host.name IN ({{host_names}}) AND
-  service.name = 'test-device' AND
+  service.name = 'device' AND
   trace.id IN (
     FROM Span
     SELECT uniques(trace.id)
     WHERE
       instrumentation.provider = 'opentelemetry' AND
       host.name IN ({{host_names}}) AND
-      service.name = 'test-device' AND
+      service.name = 'device' AND
       otel.status_code = 'ERROR'
     LIMIT MAX
   )
